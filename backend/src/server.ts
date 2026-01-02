@@ -86,10 +86,19 @@ import delegatedRoutes from './routes/delegated.js';
 import sequelize from './config/database.js';
 import './models/index.js';
 
-// Test database connection
+// Test database connection (non-blocking in serverless)
 sequelize.authenticate()
   .then(() => console.log('Database connection established successfully.'))
-  .catch((err: Error) => console.error('Unable to connect to the database:', err));
+  .catch((err: Error) => {
+    console.error('Unable to connect to the database:', err);
+    console.error('DB Config:', {
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      database: process.env.DB_NAME,
+      user: process.env.DB_USER,
+      hasPassword: !!process.env.DB_PASSWORD
+    });
+  });
 
 // Routes
 app.use('/api/auth', authRoutes);
