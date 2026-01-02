@@ -87,17 +87,21 @@ import sequelize from './config/database.js';
 import './models/index.js';
 
 // Test database connection (non-blocking in serverless)
+// Don't fail if DB is not available at startup - will fail on first query
 sequelize.authenticate()
-  .then(() => console.log('Database connection established successfully.'))
+  .then(() => {
+    console.log('✅ Database connection established successfully.');
+  })
   .catch((err: Error) => {
-    console.error('Unable to connect to the database:', err);
-    console.error('DB Config:', {
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      database: process.env.DB_NAME,
-      user: process.env.DB_USER,
+    console.error('⚠️ Unable to connect to the database at startup:', err.message);
+    console.error('DB Config check:', {
+      host: process.env.DB_HOST || 'NOT SET',
+      port: process.env.DB_PORT || 'NOT SET',
+      database: process.env.DB_NAME || 'NOT SET',
+      user: process.env.DB_USER || 'NOT SET',
       hasPassword: !!process.env.DB_PASSWORD
     });
+    // Don't throw - let it fail on first query instead
   });
 
 // Routes

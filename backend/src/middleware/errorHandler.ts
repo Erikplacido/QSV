@@ -16,15 +16,26 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.error('Error:', err);
+  console.error('Error handler triggered:', {
+    message: err.message,
+    stack: err.stack,
+    name: err.name,
+    path: req.path,
+    method: req.method
+  });
   
   const status = err instanceof AppError ? err.status : 500;
   const message = err.message || 'Internal server error';
   
-  res.status(status).json({
-    error: message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
-  });
+  // Don't send stack in production
+  const response: any = { error: message };
+  
+  if (process.env.NODE_ENV === 'development' || process.env.VERCEL === '1') {
+    response.stack = err.stack;
+    response.name = err.name;
+  }
+  
+  res.status(status).json(response);
 };
 
 
