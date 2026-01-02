@@ -18,7 +18,8 @@ export default defineConfig(({ mode }) => {
         alias: {
           // FIX: `process.cwd()` can cause type errors. `path.resolve('.')` is an alternative to get the project root.
           '@': path.resolve('.'),
-        }
+        },
+        extensions: ['.mjs', '.js', '.mts', '.ts', '.jsx', '.tsx', '.json']
       }
     };
 });

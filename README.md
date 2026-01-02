@@ -87,6 +87,57 @@ Após criar o banco de dados:
 - **Email**: `tecnico@qualiseg.com.br`
 - **Senha**: Será definida pelo backend (verifique logs)
 
+## 🚀 Deploy no Vercel
+
+O projeto está configurado para deploy completo (frontend + backend) no Vercel.
+
+### Configuração no Vercel
+
+1. **Conecte seu repositório GitHub ao Vercel**
+2. **Configure as variáveis de ambiente** no painel do Vercel:
+
+#### Variáveis de Ambiente Obrigatórias
+
+```env
+# Banco de Dados MySQL
+DB_HOST=seu-host-mysql
+DB_PORT=3306
+DB_NAME=qualiseg
+DB_USER=seu_usuario
+DB_PASSWORD=sua_senha
+
+# Sessão
+SESSION_SECRET=uma-chave-secreta-forte-aleatoria
+
+# Frontend URL (será preenchido automaticamente pelo Vercel)
+FRONTEND_URL=https://seu-projeto.vercel.app
+
+# Node Environment
+NODE_ENV=production
+```
+
+#### Variáveis de Ambiente Opcionais
+
+```env
+# Porta (não necessário no Vercel, mas pode ser definida)
+PORT=3000
+
+# Upload Directory (usado automaticamente /tmp em serverless)
+UPLOAD_DIR=/tmp/uploads
+```
+
+### Importante para Deploy no Vercel
+
+- **Banco de Dados**: Você precisa de um MySQL acessível publicamente (ex: PlanetScale, Railway, ou MySQL com IP público)
+- **Uploads**: Arquivos são salvos em `/tmp/uploads` (temporário). Para produção, considere usar S3 ou Cloudinary
+- **Sessões**: As sessões são armazenadas no MySQL. Para melhor performance em serverless, considere usar Redis
+
+### Build e Deploy
+
+O Vercel detecta automaticamente:
+- Frontend: Build com `vite build`
+- Backend: Serverless functions em `api/index.ts`
+
 ## 📚 Documentação Adicional
 
 - `backend/README.md` - Documentação do backend

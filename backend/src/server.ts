@@ -31,8 +31,13 @@ const pool = mysql.createPool({
 const MySQLSession = MySQLStore(session);
 
 // Middleware
+// In Vercel, allow requests from the same origin
+const corsOrigin = process.env.VERCEL === '1' 
+  ? process.env.FRONTEND_URL || '*' 
+  : process.env.FRONTEND_URL || 'http://localhost:5173';
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+  origin: corsOrigin,
   credentials: true,
 }));
 
@@ -59,7 +64,11 @@ app.use(session({
 }));
 
 // Serve uploaded images
-app.use('/api/photos', express.static(path.join(__dirname, '../uploads')));
+// In serverless, use /tmp/uploads, otherwise use local uploads directory
+const uploadsPath = process.env.VERCEL === '1' 
+  ? '/tmp/uploads' 
+  : path.join(__dirname, '../uploads');
+app.use('/api/photos', express.static(uploadsPath));
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -93,11 +102,13 @@ app.use('/api/delegated', delegatedRoutes);
 import { errorHandler } from './middleware/errorHandler.js';
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// Start server only if not in serverless environment
+if (process.env.VERCEL !== '1' && !process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+}
 
 export default app;
 

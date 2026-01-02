@@ -6,8 +6,12 @@ import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// In serverless (Vercel), use /tmp/uploads, otherwise use local uploads directory
+const uploadsDir = process.env.VERCEL === '1' 
+  ? '/tmp/uploads' 
+  : path.join(__dirname, '../../uploads');
+
 // Ensure uploads directory exists
-const uploadsDir = path.join(__dirname, '../../uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }

@@ -9,6 +9,11 @@ import { AppError } from '../middleware/errorHandler';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// In serverless (Vercel), use /tmp/uploads, otherwise use local uploads directory
+const uploadsBaseDir = process.env.VERCEL === '1' 
+  ? '/tmp/uploads' 
+  : path.join(__dirname, '../../uploads');
+
 const router = Router();
 
 // Upload photo
@@ -27,10 +32,7 @@ router.post('/upload', requireAuth, upload.single('file'), async (req: AuthReque
     }
     
     // Construct relative URL
-    const relativePath = path.relative(
-      path.join(__dirname, '../../uploads'),
-      req.file.path
-    );
+    const relativePath = path.relative(uploadsBaseDir, req.file.path);
     const photoUrl = `/api/photos/${relativePath.replace(/\\/g, '/')}`;
     
     res.json({
@@ -48,11 +50,11 @@ router.post('/upload', requireAuth, upload.single('file'), async (req: AuthReque
 router.get('/:filename(*)', (req: Request, res: Response, next) => {
   try {
     const filename = req.params.filename;
-    const filePath = path.join(__dirname, '../../uploads', filename);
+    const filePath = path.join(uploadsBaseDir, filename);
     
     // Security: prevent directory traversal
     const resolvedPath = path.resolve(filePath);
-    const uploadsDir = path.resolve(__dirname, '../../uploads');
+    const uploadsDir = path.resolve(uploadsBaseDir);
     
     if (!resolvedPath.startsWith(uploadsDir)) {
       throw new AppError('Invalid file path', 403);
