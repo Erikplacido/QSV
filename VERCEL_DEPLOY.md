@@ -60,6 +60,13 @@ FRONTEND_URL=https://seu-projeto.vercel.app
 
 **Solução**: Já corrigido no `vite.config.ts` com extensões explícitas.
 
+### Erros de TypeScript durante o build
+
+**Solução**: 
+- Todas as dependências do backend foram adicionadas ao `package.json` da raiz
+- O Vercel pode mostrar warnings de TypeScript, mas o build deve completar
+- Os erros de tipo não impedem o funcionamento em runtime
+
 ### Erro: "Database connection failed"
 
 **Solução**: 
