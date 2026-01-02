@@ -1,0 +1,8 @@
+{
+  "name": "QSV4",
+  "description": "An application for property inspections and creating insurance policies. It allows users to register properties, conduct inspections by taking photos with watermarks (date, time, GPS), add comments, and generate reports.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
